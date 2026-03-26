@@ -15,16 +15,20 @@ import { Modal, Portal, Button, Provider } from 'react-native-paper'; // Import 
 import CustomHeader from '../Components/CustomHeader';
 import { BASE_URL } from '@env';
 
-const IconButton = ({ icon, label }) => {
+const IconButton = ({ icon, label, onPress }) => {
   const { theme } = useTheme();
 
   return (
-    <View style={[styles.iconContainer, { backgroundColor: theme.iconBackground }]}>
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.7}
+      style={[styles.iconContainer, { backgroundColor: theme.iconBackground }]}
+    >
       <View style={[styles.iconCircle, { backgroundColor: theme.primary }]}>
         <Text style={styles.iconText}>{icon}</Text>
       </View>
-      <Text style={[styles.iconLabel, { color: theme.iconText || theme.text}]}>{label}</Text>
-    </View>
+      <Text style={[styles.iconLabel, { color: theme.iconText || theme.text }]}>{label}</Text>
+    </TouchableOpacity>
   );
 };
 
@@ -42,6 +46,7 @@ const ProfileField = ({ label, value }) => {
 export default function SettingsScreen() {
   const { theme, updateTheme } = useTheme();
   const [modalVisible, setModalVisible] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [profileData, setProfileData] = useState({
     name: 'Guest',
     due_date: 'Not set',
@@ -49,6 +54,26 @@ export default function SettingsScreen() {
   });
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+
+  const handleNotificationPress = () => {
+    Alert.alert(
+      'Push Notifications',
+      `Notifications are currently ${notificationsEnabled ? 'enabled' : 'disabled'}.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: notificationsEnabled ? 'Disable' : 'Enable',
+          onPress: () => {
+            setNotificationsEnabled(prev => !prev);
+            Alert.alert(
+              'Notifications',
+              `Push notifications have been ${notificationsEnabled ? 'disabled' : 'enabled'}.`
+            );
+          },
+        },
+      ]
+    );
+  };
 
   // Fetch profile data from backend
   useEffect(() => {
@@ -121,7 +146,11 @@ export default function SettingsScreen() {
         </View>
 
         <View style={styles.iconsRow}>
-          <IconButton icon="🔔" label="Notification" />
+          <IconButton
+            icon={notificationsEnabled ? '🔔' : '🔕'}
+            label={notificationsEnabled ? 'Notifications On' : 'Notifications Off'}
+            onPress={handleNotificationPress}
+          />
         </View>
 
         <TouchableOpacity style={[styles.openButton,{backgroundColor:theme.button}]} onPress={() => setModalVisible(true)}>
