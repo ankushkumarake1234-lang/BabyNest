@@ -11,7 +11,8 @@ import {
   RefreshControl
 } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
-import { Modal, Portal, Button, Provider } from 'react-native-paper'; // Import from paper
+import { Modal, Portal, Button, Provider } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
 import CustomHeader from '../Components/CustomHeader';
 import { BASE_URL } from '@env';
 
@@ -45,6 +46,7 @@ const ProfileField = ({ label, value }) => {
 
 export default function SettingsScreen() {
   const { theme, updateTheme } = useTheme();
+  const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [profileData, setProfileData] = useState({
@@ -109,14 +111,7 @@ export default function SettingsScreen() {
   };
 
   const handleEditProfile = () => {
-    Alert.alert(
-      'Edit Profile',
-      'This will open the profile editing screen. For now, you can refresh to see updated data.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Refresh', onPress: onRefresh }
-      ]
-    );
+    navigation.navigate('EditProfile');
   };
 
   return (
